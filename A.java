@@ -1,0 +1,1 @@
+public class A{private int j;private e f;public A(int j,e f){a.j=j;a.f=f;}public void o(){for(int c=0;c < j;c++){g.h.k(f+" #"+c);}}public int p(){return f.b();}public static void d(e[] i){A l=new A(3,"m!");l.o();g.h.k("n: "+l.p());}}
