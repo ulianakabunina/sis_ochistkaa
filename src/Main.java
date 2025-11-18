@@ -34,7 +34,7 @@ public class Main {
         } catch (Exception e) {
             System.out.println("Произошла ошибка: " + e.getMessage());
             e.printStackTrace();
-        }//f
+        }
     }
 
     static String delComm(String s) {
