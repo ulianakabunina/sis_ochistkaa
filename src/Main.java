@@ -5,53 +5,56 @@ import java.util.regex.*;
 
 public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
 
-        File jFile = new File("TestFile.java");
+        try {
+            File jFile = new File("TestFile.java");
 
-        if (!jFile.exists()) {
-            System.out.println("Файл TestFile.java не найден в папке проекта!");
-            return;
+            if (!jFile.exists()) {
+                System.out.println("Файл TestFile.java не найден в папке проекта!");
+                return;
+            }
+
+            String code = Files.readString(jFile.toPath());
+
+            code = delComm(code);
+            code = newProb(code);
+            String oldClassName = findClass(code);
+            String newClassName = "A";
+            code = code.replaceAll("\\b" + oldClassName + "\\b", newClassName);
+            code = zamena(code, newClassName);
+
+            File newFile = new File(newClassName + ".java");
+            Files.writeString(newFile.toPath(), code);
+
+            System.out.println("Готово! Файл сохранён как: " + newFile.getName());
+
+        } catch (IOException e) {
+            System.out.println("Ошибка работы с файлом: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Произошла ошибка: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        String code = Files.readString(jFile.toPath());
-
-        code = delComm(code);
-        code = newProb(code);
-        String oldClassName = findClass(code);
-        String newClassName = "A";
-        code = code.replaceAll("\\b" + oldClassName + "\\b", newClassName);
-        code = zamena(code, newClassName);
-
-        // Сохраняем результат как A.java в той же папке
-        File newFile = new File(newClassName + ".java");
-        Files.writeString(newFile.toPath(), code);
-
-        System.out.println("Готово! Файл сохранён как: " + newFile.getName());
     }
 
-    // Удаляем комментарии
     static String delComm(String s) {
         s = s.replaceAll("//.*", "");
         s = s.replaceAll("(?s)/\\*.*?\\*/", "");
         return s;
     }
 
-    // Сжимаем пробелы
     static String newProb(String s) {
         s = s.replaceAll("\\s+", " ");
         s = s.replaceAll("\\s*([{}();=,+-])\\s*", "$1");
         return s.trim();
     }
 
-    // Находим имя класса
     static String findClass(String code) {
         Matcher m = Pattern.compile("class\\s+(\\w+)").matcher(code);
         if (m.find()) return m.group(1);
         return "UnknownClass";
     }
 
-    // Замена идентификаторов на короткие имена
     static String zamena(String code, String className) {
         Set<String> ids = new HashSet<>();
 
@@ -75,18 +78,15 @@ public class Main {
         return code;
     }
 
-    // Генератор имён
     static List<String> generateNames(int n) {
         List<String> list = new ArrayList<>();
         int count = 0;
         while (list.size() < n) {
-            String name = createName(count++);
-            list.add(name);
+            list.add(createName(count++));
         }
         return list;
     }
 
-    // Делает a, b, c, …, aa, ab …
     static String createName(int i) {
         StringBuilder sb = new StringBuilder();
         do {
